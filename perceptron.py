@@ -68,5 +68,5 @@ if __name__ == "__main__":
     trainingLabels = dp.loadLabelFile("digitdata/traininglabels", 5000)
 
     # Needs to classify handwritten digits 0-9
-    test = PerceptronClassifier(range(10), 3)
+    test = PerceptronClassifier(range(10), 5)
     test.train(trainingData, trainingLabels)
