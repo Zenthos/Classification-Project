@@ -1,5 +1,9 @@
 from datum import Datum
 
+
+"""
+Creates of list of Datum Objects each containing the features of a particular image digit
+"""
 def loadDataFile(fileName, n, width, height):
   items = []
   with open(fileName, 'r') as infile:
@@ -18,6 +22,10 @@ def loadDataFile(fileName, n, width, height):
 
   return items
 
+
+"""
+Loads n number of labels from the given file
+"""
 def loadLabelFile(fileName, n):
   labels = []
   with open(fileName, 'r') as infile:
