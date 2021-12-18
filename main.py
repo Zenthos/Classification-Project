@@ -132,14 +132,15 @@ if __name__ == "__main__":
     ))
 
     print("---------------------------------------------------------------------------------------------------------------------------")
-    for i in range(10):
+    for i in range(0, 10):
       percent = "%s%%" % (percentages[i])
       t_time = "%.2fs" % (trainingTimes[i])
       v_acc = "%.2f%%" % (validationAccuracies[i])
       v_time = "%.2fs" % (validationTimes[i])
       t_acc = "%.2f%%" % (testingAccuracies[i])
       test_time = "%.2fs" % (testingTimes[i])
-      mean = "%.2f" % (float(sum(testingAccuracies[0:i]) / (i + 1)))
-      deviation = "%.2f" % (float(math.sqrt((sum([acc - float(mean) for acc in testingAccuracies[0:i]]) / len(testingAccuracies[0:i + 1])) ** 2)))
+      array = np.array(testingAccuracies[0:i + 1])
+      mean = "%.2f" % (float(np.mean(array)))
+      deviation = "%.2f" % (float(np.std(array)))
       print("{:<10} {:<15} {:<15} {:<20} {:<15} {:<15} {:<10} {:>15}".format(percent, t_time, v_acc, v_time, t_acc, test_time, mean, deviation))
     print("---------------------------------------------------------------------------------------------------------------------------\n")
