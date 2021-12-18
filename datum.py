@@ -1,24 +1,29 @@
 import numpy as np
 
+
+"""
+The datum class holds the information of a single image
+"""
 class Datum:
   def __init__(self, data, width, height):
     self.width = width
     self.height = height
     self.pixels = data
-    self.features = [[' ' for i in range(width)] for j in range(height)]
+    self.features = [[' ' for _ in range(width)] for _ in range(height)]
     self.extractFeatures(data)
+    self.features = np.array(self.features)
 
 
   def getData(self):
     return self.pixels
 
 
+  def getFeatures(self):
+    return self.features
+
+
   def getFeature(self, row, col):
     return self.features[row][col]
-
-
-  def getFeatures(self):
-    return np.array(self.features)
 
 
   def extractFeatures(self, data):

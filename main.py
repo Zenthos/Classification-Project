@@ -1,4 +1,6 @@
+import math
 import dataParser as dp
+import numpy as np
 import optparse
 import time
 import sys
@@ -63,6 +65,11 @@ if __name__ == "__main__":
         testData = dp.loadDataFile("facedata/facedatatest", 150, DATUM_WIDTH, DATUM_HEIGHT)
         testLabels = dp.loadLabelFile("facedata/facedatatestlabels", 150)
 
+    # Shuffles the data
+    perm = np.random.permutation(trainingCount)
+    trainingData = trainingData[perm]
+    trainingLabels = trainingLabels[perm]
+
     currentPercentage = 0
     percentages = []
     trainingTimes = []
@@ -89,7 +96,7 @@ if __name__ == "__main__":
       if classifier.type == 'nb':
         classifier.train(trainingData[0:(k * valChunkLength)], trainingLabels[0:(k * valChunkLength)])
       else:
-        classifier.train(trainingChunk, trainingLabelsChunk, validationChunk, validationLabelsChunk)
+        classifier.train(trainingChunk, trainingLabelsChunk)
       
       trainingTime = time.time() - trainingStart
       trainingTimes.append(trainingTime)
@@ -98,7 +105,7 @@ if __name__ == "__main__":
       validatingStart = time.time()
       guesses = classifier.classify(validationData)
       correct = [guesses[i] == validationLabels[i] for i in range(len(validationLabels))].count(True)
-      validationAccuracy = (100.0 * correct / len(testLabels))
+      validationAccuracy = (100.0 * correct / len(validationLabels))
       print(str(correct), ("correct out of " + str(len(validationLabels)) + " (%.1f%%).") % validationAccuracy)
       validationTimes.append(time.time() - validatingStart)
       validationAccuracies.append(validationAccuracy)
@@ -113,16 +120,18 @@ if __name__ == "__main__":
       testingAccuracies.append(testAccuracy)
 
     # Tabulate Data
-    print("\n{:<10} {:<20} {:<20} {:<20} {:<20} {:<20}".format(
+    print("\n{:<10} {:<15} {:<15} {:<20} {:<15} {:<15} {:<10} {:>15}".format(
       'Percent', 
       'Training Time', 
       'Validation Acc', 
       'Validation Times', 
       'Testing Acc', 
-      'Testing Times'
+      'Testing Times',
+      'Mean Acc',
+      'Std. Deviation'
     ))
 
-    print("------------------------------------------------------------------------------------------------------------")
+    print("---------------------------------------------------------------------------------------------------------------------------")
     for i in range(10):
       percent = "%s%%" % (percentages[i])
       t_time = "%.2fs" % (trainingTimes[i])
@@ -130,6 +139,7 @@ if __name__ == "__main__":
       v_time = "%.2fs" % (validationTimes[i])
       t_acc = "%.2f%%" % (testingAccuracies[i])
       test_time = "%.2fs" % (testingTimes[i])
-      print("{:<10} {:<20} {:<20} {:<20} {:<20} {:<20}".format(percent, t_time, v_acc, t_acc))
-
-    print("------------------------------------------------------------------------------------------------------------\n")
+      mean = "%.2f" % (float(sum(testingAccuracies[0:i]) / (i + 1)))
+      deviation = "%.2f" % (float(math.sqrt((sum([acc - float(mean) for acc in testingAccuracies[0:i]]) / len(testingAccuracies[0:i + 1])) ** 2)))
+      print("{:<10} {:<15} {:<15} {:<20} {:<15} {:<15} {:<10} {:>15}".format(percent, t_time, v_acc, v_time, t_acc, test_time, mean, deviation))
+    print("---------------------------------------------------------------------------------------------------------------------------\n")
